@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Schedule</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .day { margin: 10px; padding: 10px; border: 1px solid black; }
+        textarea { width: 100%; height: 50px; }
+        button { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Weekly Schedule</h1>
+    <div id="schedule"></div>
+    <button onclick="toggleEditMode()">Edit Schedule</button>
+    <script>
+        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        let editMode = false;
+
+        function loadSchedule() {
+            let scheduleDiv = document.getElementById("schedule");
+            scheduleDiv.innerHTML = "";
+            days.forEach(day => {
+                let storedText = localStorage.getItem(day) || "";
+                scheduleDiv.innerHTML += `
+                    <div class='day'>
+                        <h3>${day}</h3>
+                        <textarea id="${day}" ${editMode ? '' : 'disabled'}>${storedText}</textarea>
+                    </div>
+                `;
+            });
+        }
+
+        function toggleEditMode() {
+            if (!editMode) {
+                let pass = prompt("Enter password to edit:");
+                if (pass !== "yourpassword") return;
+            }
+            editMode = !editMode;
+            loadSchedule();
+            if (editMode) {
+                let saveBtn = document.createElement("button");
+                saveBtn.innerText = "Save Changes";
+                saveBtn.onclick = saveSchedule;
+                document.body.appendChild(saveBtn);
+            } else {
+                document.querySelector("button:last-of-type").remove();
+            }
+        }
+
+        function saveSchedule() {
+            days.forEach(day => {
+                localStorage.setItem(day, document.getElementById(day).value);
+            });
+            alert("Schedule saved!");
+        }
+
+        loadSchedule();
+    </script>
+</body>
+</html>
